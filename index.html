@@ -9,34 +9,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="PrincessLia"/>
 <link rel="apple-touch-icon" href="icon-192.png"/>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- PWA: capturar evento ANTES que todo -->
-<script>
-  window._pwaPrompt = null;
-  window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    window._pwaPrompt = e;
-    const btn = document.getElementById('install-btn');
-    if (btn) btn.style.display = 'block';
-  });
-  window.addEventListener('appinstalled', () => {
-    window._pwaPrompt = null;
-    const btn = document.getElementById('install-btn');
-    if (btn) btn.style.display = 'none';
-  });
-</script>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:14px;position:relative;}
 body::before{
-  content:'';
-  position:fixed;
-  inset:0;
+  content:'';position:fixed;inset:0;
   background:url('https://drive.google.com/thumbnail?id=1G6MBC2DwvrgeiFK1grQMeLuJvm8pa4Nt&sz=w800') center/cover no-repeat;
-  opacity:0.55;
-  z-index:-1;
+  opacity:0.55;z-index:-1;
 }
 input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing:border-box}
 .inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:9px 12px;width:100%;outline:none}
@@ -53,109 +34,68 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
 .sync{font-size:11px;text-align:center;padding:4px;color:#a06090;min-height:18px;transition:.3s}
 .sync.ok{color:#3ecf8e}
 .sync.err{color:#f76f6f}
-
-/* Header */
-#hdr{padding:12px 14px;border-bottom:1px solid #3d0035;background:#130010;
+#hdr{padding:12px 14px;border-bottom:1px solid #3d0035;background:#130010cc;
   display:flex;justify-content:space-between;align-items:center}
 #hdr .brand{color:#ff6ec7;font-weight:700;font-size:15px}
 #hdr .sub{color:#a06090;font-size:10px}
 #hv{color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4;max-width:190px;text-align:right}
-
-/* Nav tabs */
-#nav{padding:8px 10px;border-bottom:1px solid #3d0035;background:#130010;
+#nav{padding:8px 10px;border-bottom:1px solid #3d0035;background:#130010cc;
   display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 #nav::-webkit-scrollbar{display:none}
 .tab{background:none;border:1px solid transparent;border-radius:8px;
   padding:7px 11px;color:#a06090;font-size:12px;cursor:pointer;white-space:nowrap}
 .tab.on{background:#e91e8c22;color:#ff6ec7;border-color:#e91e8c44}
-
-/* Pages */
 .pg{display:none;padding:12px;animation:fadeIn .25s ease}
 .pg.on{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* Modal */
-.overlay{display:none;position:fixed;inset:0;background:#000000cc;
-  z-index:50;overflow-y:auto;padding:50px 10px}
+.overlay{display:none;position:fixed;inset:0;background:#000000cc;z-index:50;overflow-y:auto;padding:50px 10px}
 .overlay.on{display:block}
-.box{background:#1a0018;border:1px solid #e91e8c44;border-radius:13px;
-  padding:20px;width:94%;max-width:380px;margin:0 auto}
+.box{background:#1a0018;border:1px solid #e91e8c44;border-radius:13px;padding:20px;width:94%;max-width:380px;margin:0 auto}
 .box h3{color:#ff6ec7;margin-bottom:14px;font-size:14px}
-
-/* Versículo del día */
-.vod{background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;
-  border-radius:12px;padding:18px;text-align:center;margin-bottom:10px}
+.vod{background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;border-radius:12px;padding:18px;text-align:center;margin-bottom:10px}
 .vod-label{color:#ffd700;font-size:10px;letter-spacing:2px;margin-bottom:10px}
 .vod-text{font-size:14px;line-height:1.8;color:#ffb3e6;font-style:italic;margin-bottom:8px}
 .vod-ref{color:#ff6ec7;font-size:12px}
-
-/* Prayer items */
-.prayer-item{display:flex;align-items:center;gap:8px;padding:9px 11px;
-  border-radius:8px;margin-bottom:6px;border:1px solid #3d0035}
+.prayer-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;margin-bottom:6px;border:1px solid #3d0035}
 .prayer-item.done{background:#0a150a;border-color:#1e3a1e}
 .prayer-item.pending{background:#0d0008}
-.tog-circle{flex-shrink:0;background:none;border-radius:50%;
-  width:22px;height:22px;cursor:pointer;font-size:11px;
-  display:flex;align-items:center;justify-content:center}
-
-/* Reflection cards */
+.tog-circle{flex-shrink:0;background:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center}
 .refl-card{border-left:3px solid #e91e8c44;margin-bottom:8px}
 .refl-verse{font-size:11px;color:#e91e8c;margin-bottom:4px;font-style:italic}
 .refl-text{font-size:13px;white-space:pre-wrap;line-height:1.7;color:#fce4ff}
-
-/* Event items */
-.ev-item{display:flex;align-items:center;gap:8px;padding:11px;
-  border-radius:10px;margin-bottom:8px;background:#0d0008;border-left:3px solid}
-
-/* Note cards */
+.ev-item{display:flex;align-items:center;gap:8px;padding:11px;border-radius:10px;margin-bottom:8px;background:#0d0008;border-left:3px solid}
 .nota-title{font-weight:700;color:#ff6ec7}
 .nota-body{font-size:12px;white-space:pre-wrap;line-height:1.6}
-
-/* Meta items */
 .meta-card .meta-title{font-size:13px;color:#fce4ff}
-
-/* Diary */
 .diary-lock-screen{text-align:center;padding:30px 20px}
 .diary-entry{border-left:3px solid #e91e8c22}
 .diary-date{color:#ff6ec7;font-size:12px}
 .diary-text{font-size:13px;white-space:pre-wrap;line-height:1.7}
-
-/* Gym */
 .gym-tab-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
 .ex-row{background:#080005;border-radius:8px;padding:8px;margin-bottom:6px}
-
-/* Day selector */
 .day-bar{display:flex;gap:4px;margin-bottom:10px}
-.day-btn{flex:1;padding:8px 2px;font-size:12px;position:relative;
-  border-radius:8px;cursor:pointer;border:1px solid}
-.day-dot{position:absolute;top:3px;right:3px;width:5px;height:5px;
-  border-radius:50%;background:#ffd700;display:block}
-
-/* Medidas */
+.day-btn{flex:1;padding:8px 2px;font-size:12px;position:relative;border-radius:8px;cursor:pointer;border:1px solid}
+.day-dot{position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#ffd700;display:block}
 .med-stat{text-align:center}
 .med-val{font-size:18px;font-weight:700}
 
-/* PWA install button — flotante abajo como el original */
-#install-btn{
+/* PWA — exacto como el original */
+.install-btn{
   display:none;
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:200;
-  padding:12px 28px;
-  border:1.5px solid #e91e8c88;
+  margin-top:.8rem;
+  padding:.7rem 2rem;
+  border:none;
   border-radius:50px;
-  background:rgba(13,0,8,.85);
-  backdrop-filter:blur(12px);
+  background:transparent;
+  border:1.5px solid #e91e8c66;
   color:#ff6ec7;
-  font-size:13px;
+  font-size:.9rem;
   cursor:pointer;
-  white-space:nowrap;
-  box-shadow:0 4px 20px #e91e8c44;
+  width:100%;
   transition:.3s;
+  backdrop-filter:blur(5px);
 }
-#install-btn:hover{background:#e91e8c;color:#fff;}
+.install-btn:hover{border-color:#e91e8c;background:#e91e8c22;}
 </style>
 </head>
 <body>
@@ -184,6 +124,11 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
   <button class="tab" data-pg="gym">🌸 Fitness</button>
 </div>
 
+<!-- install btn justo debajo del nav, igual que el original dentro del flujo -->
+<div style="padding:0 14px">
+  <button class="install-btn" id="install-btn" onclick="installApp()">📲 Instalar app</button>
+</div>
+
 <!-- PAGES -->
 <div id="pg-dev"    class="pg on"></div>
 <div id="pg-agenda" class="pg"></div>
@@ -196,17 +141,34 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
 <!-- MODAL -->
 <div class="overlay" id="modal-layer"></div>
 
-<!-- PWA botón flotante -->
-<button id="install-btn" onclick="
-  if(!window._pwaPrompt) return;
-  window._pwaPrompt.prompt();
-  window._pwaPrompt.userChoice.then(() => {
-    window._pwaPrompt = null;
-    document.getElementById('install-btn').style.display='none';
-  });
-">📲 Instalar app</button>
+<script>
+// PWA — igual que el original
+let deferredPrompt = null;
 
-<!-- SCRIPTS -->
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-btn').style.display = 'block';
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-btn').style.display = 'none';
+  deferredPrompt = null;
+});
+
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(choice => {
+    if (choice.outcome === 'accepted') {
+      document.getElementById('install-btn').style.display = 'none';
+    }
+    deferredPrompt = null;
+  });
+}
+</script>
+
+<!-- APP JS -->
 <script src="app.js"></script>
 </body>
 </html>
