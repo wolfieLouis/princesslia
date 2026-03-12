@@ -10,9 +10,34 @@
 <meta name="apple-mobile-web-app-title" content="PrincessLia"/>
 <link rel="apple-touch-icon" href="icon-192.png"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- PWA: capturar evento ANTES que todo -->
+<script>
+  window._pwaPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    window._pwaPrompt = e;
+    const btn = document.getElementById('install-btn');
+    if (btn) btn.style.display = 'block';
+  });
+  window.addEventListener('appinstalled', () => {
+    window._pwaPrompt = null;
+    const btn = document.getElementById('install-btn');
+    if (btn) btn.style.display = 'none';
+  });
+</script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:14px}
+body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:14px;position:relative;}
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:url('https://drive.google.com/thumbnail?id=1G6MBC2DwvrgeiFK1grQMeLuJvm8pa4Nt&sz=w800') center/cover no-repeat;
+  opacity:0.55;
+  z-index:-1;
+}
 input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing:border-box}
 .inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:9px 12px;width:100%;outline:none}
 .inp:focus{border-color:#e91e8c}
@@ -35,11 +60,6 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
 #hdr .brand{color:#ff6ec7;font-weight:700;font-size:15px}
 #hdr .sub{color:#a06090;font-size:10px}
 #hv{color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4;max-width:190px;text-align:right}
-
-/* Install btn */
-.install-btn{display:none;margin-top:5px;padding:5px 12px;border:1px solid #e91e8c44;
-  border-radius:8px;background:transparent;color:#ff6ec7;font-size:11px;cursor:pointer}
-.install-btn:hover{background:#e91e8c22}
 
 /* Nav tabs */
 #nav{padding:8px 10px;border-bottom:1px solid #3d0035;background:#130010;
@@ -114,9 +134,32 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
 /* Medidas */
 .med-stat{text-align:center}
 .med-val{font-size:18px;font-weight:700}
+
+/* PWA install button — flotante abajo como el original */
+#install-btn{
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:200;
+  padding:12px 28px;
+  border:1.5px solid #e91e8c88;
+  border-radius:50px;
+  background:rgba(13,0,8,.85);
+  backdrop-filter:blur(12px);
+  color:#ff6ec7;
+  font-size:13px;
+  cursor:pointer;
+  white-space:nowrap;
+  box-shadow:0 4px 20px #e91e8c44;
+  transition:.3s;
+}
+#install-btn:hover{background:#e91e8c;color:#fff;}
 </style>
 </head>
 <body>
+
 <!-- HEADER -->
 <div id="hdr">
   <div>
@@ -126,7 +169,6 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
   <div style="display:flex;flex-direction:column;align-items:flex-end">
     <div style="color:#ffd700;font-size:9px;letter-spacing:1px">✦ HOY ✦</div>
     <div id="hv"></div>
-    <button class="install-btn" id="install-btn">📲 Instalar app</button>
   </div>
 </div>
 <div class="sync" id="sync-bar"></div>
@@ -153,6 +195,16 @@ input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing
 
 <!-- MODAL -->
 <div class="overlay" id="modal-layer"></div>
+
+<!-- PWA botón flotante -->
+<button id="install-btn" onclick="
+  if(!window._pwaPrompt) return;
+  window._pwaPrompt.prompt();
+  window._pwaPrompt.userChoice.then(() => {
+    window._pwaPrompt = null;
+    document.getElementById('install-btn').style.display='none';
+  });
+">📲 Instalar app</button>
 
 <!-- SCRIPTS -->
 <script src="app.js"></script>
