@@ -2,20 +2,21 @@
   "name": "PrincessLia",
   "short_name": "PrincessLia",
   "description": "Agenda personal de fe, estudio y fitness 🌸",
-  "start_url": "/",
+  "start_url": "/princesslia/",
+  "scope": "/princesslia/",
   "display": "standalone",
   "background_color": "#0d0008",
   "theme_color": "#e91e8c",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/princesslia/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "/princesslia/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
